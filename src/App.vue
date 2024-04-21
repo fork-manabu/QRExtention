@@ -1,30 +1,46 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { onMounted, ref, computed } from "vue";
+import QRCode from "qrcode";
+const chrome = window.chrome;
+
+const currentUrl = ref<string>("");
+const canvas = ref<HTMLCanvasElement>();
+const errorText = ref<string>("");
+
+function generateQRCode() {
+  if (canvas.value) {
+    QRCode.toCanvas(canvas.value, currentUrl.value, (error: any) => {
+      if (error) {
+        errorText.value = "Error generating QR code";
+      }
+    });
+  }
+}
+
+onMounted(() => {
+  chrome.tabs.query({ active: true, currentWindow: true }, (e: any) => {
+    currentUrl.value = e[0].url;
+    generateQRCode();
+  });
+});
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+  <h1>QR Code for Current URL:</h1>
+  <p>{{ currentUrl }}</p>
+  <canvas ref="canvas"></canvas>
+  <p class="error">{{ errorText }}</p>
+
+  <p>Option</p>
+  <!-- <input type="text" id="url" placeholder="ID" />
+  <input type="text" id="size" placeholder="PASS" /> -->
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+.error {
+  color: red;
+  font-weight: bold;
+  font-size: 1.5em;
+  text-align: center;
 }
 </style>
