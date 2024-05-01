@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref } from "vue";
 import QRCode from "qrcode";
-const chrome = window.chrome;
 
+const chrome = window.chrome;
 const currentUrl = ref<string>("");
 const canvas = ref<HTMLCanvasElement>();
 const errorText = ref<string>("");
@@ -23,17 +23,25 @@ onMounted(() => {
     generateQRCode();
   });
 });
+
+const handleUpdateClick = () => {
+  const url = document.getElementById("url") as HTMLInputElement;
+  const size = document.getElementById("pass") as HTMLInputElement;
+  currentUrl.value = currentUrl.value + `?id=${url.value}&pass=${size.value}`;
+  generateQRCode();
+};
 </script>
 
 <template>
-  <h1>QR Code for Current URL:</h1>
-  <p>{{ currentUrl }}</p>
+  <p>QR Code for Current URL:<br />{{ currentUrl }}</p>
   <canvas ref="canvas"></canvas>
   <p class="error">{{ errorText }}</p>
-
   <p>Option</p>
-  <!-- <input type="text" id="url" placeholder="ID" />
-  <input type="text" id="size" placeholder="PASS" /> -->
+  <div class="input-area">
+    <input type="text" id="url" placeholder="ID" />
+    <input type="text" id="pass" placeholder="PASS" />
+  </div>
+  <button @click="handleUpdateClick" class="update-button">Update</button>
 </template>
 
 <style scoped>
@@ -42,5 +50,13 @@ onMounted(() => {
   font-weight: bold;
   font-size: 1.5em;
   text-align: center;
+}
+.input-area {
+  display: flex;
+  gap: 10px;
+}
+.update-button {
+  margin-block: 10px;
+  width: 100%;
 }
 </style>
