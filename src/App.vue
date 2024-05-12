@@ -7,7 +7,7 @@ const currentUrl = ref<string>("");
 const canvas = ref<HTMLCanvasElement>();
 const errorText = ref<string>("");
 
-function generateQRCode() {
+const generateQRCode = () => {
   if (canvas.value) {
     QRCode.toCanvas(canvas.value, currentUrl.value, (error: any) => {
       if (error) {
@@ -15,7 +15,7 @@ function generateQRCode() {
       }
     });
   }
-}
+};
 
 onMounted(() => {
   chrome.tabs.query({ active: true, currentWindow: true }, (e: any) => {
@@ -27,7 +27,7 @@ onMounted(() => {
 const handleUpdateClick = () => {
   const url = document.getElementById("url") as HTMLInputElement;
   const size = document.getElementById("pass") as HTMLInputElement;
-  currentUrl.value = currentUrl.value + `?id=${url.value}&pass=${size.value}`;
+  currentUrl.value = `${currentUrl.value}?id=${url.value}&pass=${size.value}`;
   generateQRCode();
 };
 </script>
